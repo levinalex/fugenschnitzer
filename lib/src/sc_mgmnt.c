@@ -2,52 +2,49 @@
 sc_mgmnt.c
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
 */
 
@@ -84,7 +81,6 @@ void calc_info_sizes(struct info_s *info) {
 void create_info(
 	struct info_s *info, const long height, const long width, const long zoom
 ) {
-	
 	info->height = height;
 	info->width = width;
 	info->original_width = width;
@@ -93,6 +89,27 @@ void create_info(
 	info->si = 0;
 	info->sc = 0;
 	calc_info_sizes(info);
+}
+
+void set_dimensions(
+	const struct info_s *info,
+	long int *height, long int *width, long int *pheight, long int *pwidth
+) {
+	*width =   info->flags.transposed? info->height:    info->ext_width;
+	*height =  info->flags.transposed? info->ext_width: info->height;
+	*pwidth =  info->flags.transposed? info->pheight:   info->pwidth;
+	*pheight = info->flags.transposed? info->pwidth:    info->pheight;
+}
+
+void set_dimensions_nom(
+	const struct info_s *info,
+	long int *height, long int *width, long int *pheight, long int *pwidth,
+	const long int nom
+) {
+	*height = info->flags.transposed? (info->original_width + nom): info->height;
+	*width  = info->flags.transposed? info->height: (info->original_width + nom);
+	*pheight = zoom_div(*height, info->zoom);
+ 	*pwidth  = zoom_div(*width, info->zoom);
 }
 
 void set_comp_pointers(struct comp_s *image, const struct info_s *info) {
@@ -124,11 +141,11 @@ void set_mark_pointers(struct mark_s *image, const struct info_s *info) {
 void set_diff_pointers(struct intn_s *diff_img, const struct info_s *info) {
 	intn_t *data = diff_img->data;
    	for (int i = 0; i < info->height; i++) {
-//		diff_img->px[-1] auf Unendlich setzen
+//		set diff_img->px[-1] to infinity
 		*data++ = INTN_INFTY;
 		diff_img->px[i] = data;
 		data += info->original_width;
-//		diff_img->px[original_width] auf Unendlich setzen
+//		set diff_img->px[original_width] to infinity
 		*data++ = INTN_INFTY;
 	}
 }
@@ -139,10 +156,10 @@ void set_seams_pointers(struct seams_s *seams, const struct info_s *info) {
    	for (int k = 0; k < info->original_width; k++) {
 		seams->coord[k] = data;
 		data += info->height;
-//		Verschiebung auf Null initialisieren
+//		initialize shift to null
 		seams->shift[k] = data;
 		memset(data, 0, sz);
-		data += info->height;	
+		data += info->height;
 	}
 	seams->tmp = data;
 }
@@ -156,21 +173,21 @@ bool create_comp_img(struct comp_s *image, const struct info_s *info) {
 	if (e) return e;
 	e |= tryrealloc((void**)&image->px, info->maxhw * sizeof(comp_t*));
 	if (e) return e;
-	
+
 	set_comp_pointers(image, info);
-	
+
 	return e;
 }
 
 bool create_intn_img(struct intn_s *image, const struct info_s *info) {
 	bool e = false;
-	
+
 	const size_t n = info->height * info->original_width;
 	e |= tryrealloc((void**)&image->data, n * sizeof(intn_t));
 	if (e) return e;
 	e |= tryrealloc((void**)&image->px, info->maxhw * sizeof(intn_t*));
 	if (e) return e;
-	
+
 	set_intn_pointers(image, info);
 
 	return e;
@@ -184,8 +201,10 @@ bool create_diff_img(
 	void **heap, struct intn_s *diff_img, const struct info_s *info
 ) {
 	bool e = false;
-/*  Links und rechts je eine zusätzliche Spalte mit Maximalwert.
-	Diese beiden Spalten werden bei der Fugensuche verwendet.*/
+/*  Links und rechts je eine zusaetzliche Spalte mit Maximalwert.
+	Diese beiden Spalten werden bei der Fugensuche wichtig.
+	An additional left and right column set to the maximum.
+	These are important when finding seams. */
 	const size_t sz = max2_sz(sizeof(intn_t),  sizeof(comp_t)),
 				psz = max2_sz(sizeof(intn_t*), sizeof(comp_t*)),
 				  n = info->height * info->original_width + info->maxhw * 2;
@@ -200,19 +219,19 @@ bool create_diff_img(
 
 bool create_mark_img(struct mark_s *mark_img, const struct info_s *info) {
 	bool e = false;
-	
+
 	const size_t n = info->height * info->original_width + info->maxhw;
 	e |= tryrealloc((void**)&mark_img->data, n * sizeof(mark_t));
 	e |= tryrealloc((void**)&mark_img->px, info->maxhw * sizeof(mark_t*));
 
 	set_mark_pointers(mark_img, info);
-	
+
 	return e;
 }
 
 bool create_seams(struct seams_s *seams, const struct info_s *info) {
 	bool e = false;
-	
+
 	const size_t n = info->height * info->original_width * 2 +	// coord + shift
 					 info->maxhw;								// tmp
 	e |= tryrealloc((void**)&seams->data, n * sizeof(seam_t));
@@ -361,7 +380,7 @@ bool copy_mark_alpha(
 	int shift = 0;
 	for (int k = 0; k < c - 1; k++)
 		shift += info->channel[k].width;
-		
+
 	if (info->flags.transposed)
 		for (int i = 0; i < info->height; i++)
 			for (int j = 0; j < info->original_width; j++)
@@ -376,7 +395,7 @@ bool copy_mark_alpha(
 				);
 
 	info->flags.mark = IMARK_ALPHA;
-	
+
 	return false;
 }
 */
@@ -389,7 +408,7 @@ bool load_mark(
 		unzoom_mark(image, img_in, info);
 	else
 		copy_mark(image, img_in, info);
-		
+
 	info->flags.mark = IMARK_MARK;
 	return false;
 }
@@ -460,16 +479,16 @@ void preview_mark(
 void transpose_mark(
 	struct mark_s *image, void *heap, const struct info_s *info
 ) {
-//	Transponieren ist nicht möglich, wenn das Bild bereits geändert wurde.
+//	Transponieren ist nicht moeglich, wenn das Bild bereits geaendert wurde.
 	if (!info->flags.mark || info->si || info->sc) return;
 
 	mark_t *tmp = heap;
-//	Bild nach heap kopieren, dabei Zählpriorität vertauschen
+//	Bild nach heap kopieren, dabei Zaehlprioritaet vertauschen
 	for (int j = 0; j < info->original_width; j++)
 		for (int i = 0; i < info->height; i++)
 		    *(tmp++) = image->px[i][j];
 
-//	Bild wieder zurückkopieren
+//	Bild wieder zurueckkopieren
 	const size_t l = info->height * sizeof(mark_t);
 	tmp = heap;
 
@@ -484,15 +503,15 @@ void transpose_mark(
 bool transpose_comp(
 	struct comp_s *image, void *heap, const struct info_s *info
 ) {
-//	Transponieren ist nicht möglich, wenn das Bild bereits geändert wurde.
+//	transposing not possible if image has already been changed
 	if (info->sc || info->si) return true;
-//	Bild nach heap kopieren, dabei Zählpriorität vertauschen
+//	copy image to heap with exchanged counting priority
 	comp_t *tmp = heap;
 	for (int j = 0; j < info->original_width; j++)
 		for (int i = 0; i < info->height; i++)
 		    *(tmp++) = image->px[i][j];
 
-//	Bild wieder zurückkopieren
+//	copy image back
 	const size_t l = info->height * sizeof(comp_t);
 	tmp = heap;
 
@@ -520,7 +539,7 @@ bool transpose_images(
 	set_intn_pointers(intn_img, info);
 	set_diff_pointers(diff_img, info);
 	set_seams_pointers(seams, info);
-	
+
 	return false;
 }
 
@@ -530,7 +549,7 @@ bool extend_mark(
 	struct mark_s *image, const struct info_s *info, const int ext_before
 ) {
 	bool e = false;
-//	Speicherbereich vergrößern
+//	Speicherbereich vergroessern
 	size_t n = info->height * info->ext_width +
 			   max2(info->height, info->ext_width);
 	e |= tryrealloc((void**)&image->data, n * sizeof(mark_t));
@@ -561,49 +580,53 @@ bool extend_comp(
 	struct comp_s *image, const struct info_s *info, const int ext_before
 ) {
 	bool e = false;
-//	Bildspeicher vergrößern: original_width => ext_width
+//	extend image memory: original_width => ext_width
 	size_t n = info->height * info->ext_width +				// px
 			   max2(info->height, info->ext_width);			// tmp
 	e |= tryrealloc((void**)&image->data, n * sizeof(comp_t));
-//	Zeigerspeicher vergrößern
+//	extend pointers memory
 
 	n = max2(info->maxhw, info->ext_width);
 	e |= tryrealloc((void**)&image->px, n * sizeof(comp_t*));
-	
+
 	if (e) return e;
 
-//	Pixel zeilenweise nach hinten verschieben:
-//	Initialisieren
+//	line-wise move pixels to the end:
+//	initialize
 	const size_t l = info->ext_width * sizeof(comp_t);
     comp_t *s = image->data + (info->height - 1) * ext_before,
 		   *t = image->data + (info->height - 1) * info->ext_width;
 
 	for (int i = info->height - 1; i > 0; i--) {
-//		Verschieben
+//		move
 		memmove(t, s, l);
-//		Zeilenzeiger setzen
+//		set line pointers
 		image->px[i] = t;
 		t -= info->ext_width;
 		s -= ext_before;
 	}
-//	Nullter Zeiger ist noch nicht gesetzt: Setzen
+//	nullth pointer is not set: set it
 	image->px[0] = image->data;
-//	tmp hat sich auch verschoben
+//	tmp has been moved, too
 	image->tmp = image->data + (info->height * info->ext_width);
 
 	return e;
 }
 
-/*	
- *	Rückgabewert:
- *	0:	Das Bild wurde nicht erweitert.
- *	1:	Das Bild wurde erweitert.
- *	-1:	Fataler Fehler: Speicheranforderung fehlgeschlagen
+extern long int minz(const long int i);
+inline long int minz(const long int i)
+	{return (i >= 0)? i: 0;}
+
+/*
+ *	Return value:
+ *	 0: The image has not been extended.
+ *	 1: The image has been extended.
+ *	-1: Fatal error: Memory allocation failed.
  */
 
 int extend_images(
 	struct comp_s *comp_img, struct mark_s *mark_img,
-	struct info_s *info, const int extend
+	struct info_s *info, const long int extend
 ) {
 	const int ext_old = info->ext_width,
 			  ext_new = info->original_width + minz(extend);
@@ -615,7 +638,7 @@ int extend_images(
 
 	if (extend_comp(comp_img, info, ext_old))
 		return -1;
-	
+
 /*	if (extend_mark(mark_img, info, ext_old))
 		return -1;*/
 
@@ -679,7 +702,7 @@ void fix_mark(
 ) {
 //	if (!info->flags.mark) return;
 	if (info->flags.mark != IMARK_MARK) return;
-    
+
     fix_shift_mark(image, seams, info, restore);
     fix_align_mark(image, info, restore);
 }
@@ -692,7 +715,7 @@ void fix_images(
 ) {
 	fix_comp(comp_img, seams, info, restore);
 //	fix_mark(mark_img, seams, info, restore);
-	
+
 	if (restore)
 		info->sc = 0;
 

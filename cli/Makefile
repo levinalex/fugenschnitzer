@@ -1,9 +1,9 @@
 CC             = gcc
 
 # *** Linux
-# CFLAGS         = -std=c99 -Os -pthread -D_XOPEN_SOURCE=500
-# LDFLAGS        = -lm -lpng12 -lseamcarv -L. -Wl,-R./ -s
-# RM             = rm
+CFLAGS         = -std=c99 -Os -pthread -I../lib/src -D_XOPEN_SOURCE=500
+LDFLAGS        = -lm -lpng12 -lseamcarv -L. -L../lib -Wl,-R./ -s
+RM             = rm
 # *** OSX
 # CFLAGS         = -std=c99 -Os
 # LDFLAGS        = -lpng -lseamcarv -L. -s

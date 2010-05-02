@@ -2,52 +2,49 @@
 sc_color.c
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
 */
 
@@ -60,26 +57,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sc_color.h"
 
 const int CHANNELS_RGB      = 3,
+		  CHANNELS_RGB32    = 4,
 		  CHANNEL_WIDTH_RGB = 8;
-		  
+
 const comp_t BITMASK_RGB    = 0xFF;
 
-/*** py_rgb: load**************************************************************/
+#include <stdbool.h>
+// http://www.ibm.com/developerworks/aix/library/au-endianc/index.html
+bool is_littlee(void) {
+	const int n = 1;
+	return *(char*) &n;
+}
+
+/*** py_rgb: load *************************************************************/
+
+comp_t load_comp_py_px_reverse_24(const uint8_t **image_in) {
+	*image_in += CHANNELS_RGB;
+	comp_t c = 0;
+	for (int j = 0; j < CHANNELS_RGB; j++) {
+		c <<= CHANNEL_WIDTH_RGB;
+		c |= *(--(*image_in));
+	}
+	*image_in += CHANNELS_RGB;
+	return c;
+}
+
+comp_t load_comp_py_px_reverse(const uint8_t **image_in) {
+	*image_in += CHANNELS_RGB;
+	comp_t c = 0;
+	for (int j = 0; j < CHANNELS_RGB; j++) {
+		c <<= CHANNEL_WIDTH_RGB;
+		c |= *((*image_in)--);
+	}
+	*image_in += CHANNELS_RGB;
+	return c;
+}
+
+comp_t load_comp_py_px_progressive(const uint8_t **image_in) {
+	comp_t c = 0;
+	for (int j = 0; j < CHANNELS_RGB; j++) {
+		c <<= CHANNEL_WIDTH_RGB;
+		c |= *((*image_in)++);
+	}
+	return c;
+}
+
+typedef comp_t (*load_comp_py_px_func_t)(const uint8_t **image_in);
+
+const load_comp_py_px_func_t load_comp_py_px_func[] = {
+	load_comp_py_px_reverse,
+	load_comp_py_px_progressive
+};
 
 void load_comp_py_rgb32(
 	struct comp_s *image, const uint8_t *image_in, const struct info_s *info
 ) {
 	const long int l = info->height * info->original_width;
+	const load_comp_py_px_func_t load_comp_py_px = load_comp_py_px_func[is_littlee()];
 	comp_t *d = image->data;
 
 	for (long int i = 0; i < l; i++) {
-		comp_t c = 0;
-		for (int j = 0; j < CHANNELS_RGB; j++) {
-			c <<= CHANNEL_WIDTH_RGB;
-			c |= *image_in++;
-		}
+		*d++ = load_comp_py_px(&image_in) | 0xFF000000;
 		image_in++;
-		*d++ = c | 0xFF000000;	// Alpha auf Maximum setzen
 	}
 }
 
@@ -89,16 +128,8 @@ void load_comp_py_rgb24(
 	const long int l = info->height * info->original_width;
 	comp_t *d = image->data;
 
-	for (long int i = 0; i < l; i++) {
-		image_in += CHANNELS_RGB;
-		comp_t c = 0;
-		for (int j = 0; j < CHANNELS_RGB; j++) {
-			c <<= CHANNEL_WIDTH_RGB;
-			c |= *--image_in;
-		}
-		*d++ = c | 0xFF000000;	// Alpha auf Maximum setzen
-		image_in += CHANNELS_RGB;
-	}
+	for (long int i = 0; i < l; i++)
+		*d++ = load_comp_py_px_reverse_24(&image_in) | 0xFF000000;
 }
 
 void load_comp_py_rgb(
@@ -122,7 +153,7 @@ void py_rgb_px(uint8_t *img_out, comp_t px, const int ch) {
 
 void zoom_comp_ln_py_rgb(
 	uint8_t *img_out, const struct comp_s *image, const struct info_s *info,
-	const int i, const int ch, const int d
+	const long int i, const int ch, const int d
 ) {
 	const int a = (info->flags.transposed? 1: info->pwidth) * ch,
 			  b = (info->flags.transposed? info->pheight: 1) * ch;
@@ -140,23 +171,22 @@ void zoom_comp_py_rgb(
 ) {
 	const int ch = rgb32? 4: 3,
 			   d = info->zoom * info->zoom;
-	
+
 	for	(int i = 0; i < info->pheight; i++)
 		zoom_comp_ln_py_rgb(img_out, image, info, i, ch, d);
 }
 
-// d nur, damit der Funktionsprototyp mit zoom_comp_ln_py_rgb uebereinstimmt:
+// d only for the function prototype to meet zoom_comp_ln_py_rgb:
 
 void eject_comp_ln_py_rgb(
 	uint8_t *img_out, const struct comp_s *image, const struct info_s *info,
-	const int i, const int ch, const int d
+	const long int i, const int ch, const int d
 ) {
-
 	const int a = (info->flags.transposed? 1: info->ext_width) * ch,
 			  b = (info->flags.transposed? info->height: 1) * ch;
-	
-	const comp_t *px = image->px[i]; 
-	
+
+	const comp_t *px = image->px[i];
+
 	img_out += i * a;
 	for (int j = 0; j < info->ext_width; j++) {
 		py_rgb_px(img_out, *px++, ch);
@@ -203,7 +233,7 @@ void display_seam_py_rgb(
 		uint8_t *p = image_out +
 			(info->flags.transposed? ((b * x) + y): ((b * y) + x)) * ch;
 		for (int c = 0; c < ch; c++)
-			*p++ = color[c];		
+			*p++ = color[c];
 	}
 }
 

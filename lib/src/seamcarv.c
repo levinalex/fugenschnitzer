@@ -2,62 +2,50 @@
 seamcarv.c
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
-
-/*
-Linken mit GNU:
--shared
--Wl,--dll,--kill-at,--enable-auto-import
--Wl,--out-implib,seamcarv.a
--Wl,--output-def,seamcarv.def
 */
 
 #include <stdlib.h>		// free: sc_close
@@ -104,7 +92,7 @@ LIB_PUBLIC void sc_close(void) {
 	free(mark_img.data);
 
 	free(seams.coord);
-	free(seams.shift);	
+	free(seams.shift);
 	free(seams.data);
 
 	free(comp_img.px);
@@ -143,7 +131,7 @@ LIB_PUBLIC bool sc_load_py_rgb(
 	info.flags.mark = IMARK_NONE;
 
 	create_info(&info, *height, *width, zoom? zoom: 1);
-	
+
 	*height = info.pheight;
 	*width = info.pwidth;
 
@@ -153,7 +141,7 @@ LIB_PUBLIC bool sc_load_py_rgb(
 	e |= create_mark_img(&mark_img, &info);
 	e |= create_seams(&seams, &info);
 	e |= create_comp_img(&comp_img, &info);
-	
+
 	load_comp_py_rgb(&comp_img, image, &info, rgb32);
 
 	return e;
@@ -169,30 +157,20 @@ LIB_PUBLIC void sc_preview_py_rgb(
 	preview_comp_py_rgb(image, &comp_img, &info, zoom, rgb32);
 }
 
-void set_dimensions(
-	const struct info_s *info,
-	long int *height, long int *width, long int *pheight, long int *pwidth
-) {
-	*width =   info->flags.transposed? info->height:    info->ext_width;
-	*height =  info->flags.transposed? info->ext_width: info->height;
-	*pwidth =  info->flags.transposed? info->pheight:   info->pwidth;
-	*pheight = info->flags.transposed? info->pwidth:    info->pheight;
-}
-
 /*
- *	Rückgabewert:
+ *	Return value:
  *
- *	0:	Das Bild wurde nicht erweitert und die Bilddaten nicht verschoben.
- *		Die Maske wurde geladen, falls angefordert.
- *	1:	Das Bild wurde erweitert und die Bilddaten verschoben.
- *	2:	Obwohl angefordert, wurde die Maske nicht geladen. Nur möglich bei
- *		Alpha-Maske.
+ *	0:	The image has not been extended and image data have not been moved.
+ *		The mask has been loaded if requested.
+ *	1:	The image has been extended and image data have been moved.
+ *	2:	Although requestedm the mas has not been loaded. Only possible with
+ *		alpha mask.
  *	3:	1 + 2
- *	-1:	Fataler Fehler: Speicheranforderung fehlgeschlagen
+ *	-1:	Fatal error: Memory allocation failed.
  */
- 
+
 LIB_PUBLIC int sc_prepare(
-	const bool vertical, const int extend, const bool interpol,
+	const bool vertical, const long int extend, const bool interpol,
 	const enum mark_e mmode, const mark_t *mark,
 	long int *width, long int *height, long int *pwidth, long int *pheight
 ) {
@@ -207,11 +185,11 @@ LIB_PUBLIC int sc_prepare(
 		case MARK_CLEAR:
             info.flags.mark = IMARK_NONE; break;
 	}*/
-	
+
 	info.flags.interpol = interpol;
 
     halted = false;
-	const bool transpose  = ((vertical != false) ^ info.flags.transposed) & 1;
+	const bool transpose = ((vertical != false) ^ info.flags.transposed) & 1;
 
 	if (transpose)
         transpose_images(
@@ -228,14 +206,14 @@ LIB_PUBLIC int sc_prepare(
 	return e >= 0? (e | ((int)mark_ret * 2)): e;
 }
 
-/*	
- *	Rückgabewert:
- *	0:	Das Bild wurde nicht erweitert.
- *	1:	Das Bild wurde erweitert.
- *	-1:	Fataler Fehler: Speicheranforderung fehlgeschlagen
+/*
+ *	Return value:
+ *	 0: The image has not been extended.
+ *	 1: The image has been extended.
+ *	-1: Fatal error: Memory allocation failed.
  */
 LIB_PUBLIC int sc_extend(
-	const int extend,
+	const long int extend,
 	long int *width, long int *height, long int *pwidth, long int *pheight
 ) {
 	if (!info.si) return true;
@@ -248,7 +226,7 @@ LIB_PUBLIC int sc_extend(
 
 
 LIB_PUBLIC bool sc_seam(long int last) {
-//	Bildgrößenänderung um max. Originalgröße - 3 Pixel
+//	Bildgroessenaenderung um max. Originalgroesse - 3 Pixel
 	last = labs(last);
 	const int seams_max = info.original_width - 3;
 	const int n = min2_int(last, seams_max) - info.si;
@@ -260,7 +238,7 @@ LIB_PUBLIC bool sc_seam(long int last) {
 		if (halted) break;
 		diff(&diff_img, &intn_img, &info);
 		mark(&diff_img, &mark_img, &info);
-		accu(&diff_img, &info);		
+		accu(&diff_img, &info);
 		trace_seam(&diff_img, &intn_img, &mark_img, seams.coord[info.si], &info);
 	}
 	restore_seams(&seams, &info);
@@ -277,112 +255,90 @@ LIB_PUBLIC void sc_seam_cancel(void) {
 	halted = true;
 }
 
+static int c_progress;
+
+LIB_PUBLIC long int sc_carve_progress(void)
+	{return c_progress;}
+
+
 LIB_PUBLIC long int sc_carve(
 	long int nom,
 	long int *width, long int *height, long int *pwidth, long int *pheight
 ) {
-//	Vergrößerung nicht möglich, wenn das Bild nicht erweitert wurde.
+//	enlarging impossible if image is not extended
 	if ((nom > 0) && (info.original_width == info.ext_width))
 		nom = 0;
-//	Veränderung um nur so viele Pixel wie berechnete Fugen
+//	resizing at most as wide as seams computed
 	if (abs(nom) > info.si)
 	    nom = (nom > 0)? info.si: -info.si;
 
 	const int act = -info.sc;
 
-	if (nom == act) return nom;
+	if (nom == act) return nom; // nothing to do
 
 	const bool enlarge = (nom > act),
 				extend = ((nom > 0) || (act > 0)),
 				  orig = (abs(nom - act) > max2(abs(nom), abs(act)));
-//	orig: Größenänderung von verkleinert nach vergrößert oder umgekehrt
+//	orig: resizing from shrinked to enlarged or opposite
 
 	if (orig) {
-			carve_comp(&comp_img, &seams, &info, 0, !enlarge, true);
 			carve_comp(
-				&comp_img, &seams, &info, enlarge? +nom: -nom, enlarge, false
+				&comp_img, &seams, &info, 0, !enlarge, true, &c_progress
 			);
-		}
-/*		if (enlarge) {
-			carve_comp(&comp_img, &seams, &info, 0, false, true);
-			carve_comp(&comp_img, &seams, &info, +nom, true, false);
-		} else {
-			carve_comp(&comp_img, &seams, &info, 0, true, true);
-			carve_comp(&comp_img, &seams, &info, -nom, false, false);
-		}*/
-	else
+			carve_comp(
+				&comp_img, &seams, &info, enlarge? +nom: -nom,
+				enlarge, false, &c_progress
+			);
+	} else
 		carve_comp(
 			&comp_img, &seams, &info, extend? +nom: -nom,
-			extend, extend ^ enlarge
+			extend, extend ^ enlarge, &c_progress
 		);
-/*		if (enlarge)
-		    if (extend)
-				carve_comp(&comp_img, &seams, &info, +nom, true, false);
-		    else
-				carve_comp(&comp_img, &seams, &info, -nom, false, true);
-		else
-		    if (extend)
-				carve_comp(&comp_img, &seams, &info, +nom, true, true);
-		    else
-				carve_comp(&comp_img, &seams, &info, -nom, false, false);*/
 
-	*height = info.flags.transposed? (info.original_width + nom): info.height;
-	*width  = info.flags.transposed? info.height: (info.original_width + nom);
-	*pheight = zoom_div(*height, info.zoom);
- 	*pwidth  = zoom_div(*width, info.zoom);
- 	
+	set_dimensions_nom(&info, height, width, pheight, pwidth, nom);
+
 	return nom;
 }
 
-static int c_progress;
-
 LIB_PUBLIC long int sc_carve_py_rgb(
-//	comp_t *image,
 	uint8_t *image, long int nom,
 	long int *width, long int *height, long int *pwidth, long int *pheight,
 	const bool zoom, const bool rgb32
 ) {
-//	Vergrößerung nicht möglich, wenn das Bild nicht erweitert wurde.
+//	enlarging impossible if image is not extended
 	if ((nom > 0) && (info.original_width == info.ext_width))
 		nom = 0;
-//	Veränderung um nur so viele Pixel wie berechnete Fugen
+//	resizing at most as wide as seams computed
 	if (abs(nom) > info.si)
 	    nom = (nom > 0)? info.si: -info.si;
 
 	const int act = -info.sc;
 
-	if (nom == act) return nom;
+	if (nom == act) return nom;  // nothing to do
 
 	const bool enlarge = (nom > act),
 				extend = ((nom > 0) || (act > 0)),
 				origin = (abs(nom - act) > max2(abs(nom), abs(act)));
-//	orig: Größenänderung von verkleinert nach vergrößert oder umgekehrt
+//	orig: resizing from shrinked to enlarged or opposite
 
-	if (origin) {
+	if (origin)
 			carve_comp_py_rgb(
 				image, &comp_img, &seams, &info, zoom && info.zoom,
 				enlarge? +nom: -nom, origin,
 				enlarge, false, &c_progress, rgb32
 			);
-		}
 	else
 		carve_comp_py_rgb(
 			image, &comp_img, &seams, &info, zoom && info.zoom,
 			extend? +nom: -nom, origin, extend, enlarge ^ extend,
 			&c_progress, rgb32
 		);
-	*height = info.flags.transposed? (info.original_width + nom): info.height;
-	*width  = info.flags.transposed? info.height: (info.original_width + nom);
-	*pheight = zoom_div(*height, info.zoom);
- 	*pwidth  = zoom_div(*width, info.zoom);
- 	
+	set_dimensions_nom(&info, height, width, pheight, pwidth, nom);
+
  	c_progress = -1;
- 	
+
 	return nom;
 }
-
-LIB_PUBLIC long int sc_carve_progress(void)
-	{return c_progress;}
 
 LIB_PUBLIC bool sc_fix(
 //	comp_t *image, mark_t *mark,
@@ -391,8 +347,10 @@ LIB_PUBLIC bool sc_fix(
 ) {
 	if (!info.si) return false;
 
-	if (restore)
-		carve_comp(&comp_img, &seams, &info, 0, info.sc < 0, true);
+	if (restore) {
+		int p = 0;
+		carve_comp(&comp_img, &seams, &info, 0, info.sc < 0, true, &p);
+	}
 
     fix_align_comp(&comp_img, &info, restore);
 
@@ -404,13 +362,7 @@ LIB_PUBLIC bool sc_fix(
 	e |= create_mark_img(&mark_img, &info);
 	e |= create_seams(&seams, &info);
 
-//	preview_comp(image, &comp_img, &info);
-//	preview_mark(mark, &mark_img, &info);
-	
-	*width  = info.flags.transposed? info.height: info.original_width;
-	*height = info.flags.transposed? info.original_width: info.height;
-	*pheight = zoom_div(*height, info.zoom);
-	*pwidth  = zoom_div(*width, info.zoom);
+	set_dimensions_nom(&info, height, width, pheight, pwidth, 0);
 
 	return e;
 }
@@ -428,7 +380,7 @@ LIB_PUBLIC void sc_display_seams_py_rgb(
 	const uint8_t color[], const bool rgb32
 ) {
 	first = labs(first);
-	last = labs(last);	
+	last = labs(last);
 	display_seams_py_rgb(image, &seams, &info, zoom, first, last, color, rgb32);
 }
 
@@ -447,27 +399,104 @@ LIB_PUBLIC void sc_clear_mark(void) {
 */
 /******************************************************************************/
 
-static struct {
+struct {
 	int nom, lines, rest, plines, prest, threads, *progress;
 	bool enlarge, extend, origin, zoom, rgb32;
 } cm;
 
-LIB_PUBLIC int sc_carve_py_rgb_paral_init(
-	int nom, const int threads, const bool zoom, const bool rgb32
+LIB_PUBLIC int sc_carve_paral_init(long int nom, const int threads)
+	{return sc_carve_py_rgb_paral_init(nom, threads, false, false);}
+
+LIB_PUBLIC void sc_carve_paral(const int thread) {
+	const int vfirst =  cm.lines * thread;
+
+	comp_t *image_tmp = malloc(info.maxhw * sizeof(comp_t));
+	seam_t *seams_tmp = malloc(info.maxhw * sizeof(seam_t));
+
+	if (cm.origin)
+		carve_comp_part(
+			&comp_img, &seams, &info,
+			cm.enlarge? +cm.nom: -cm.nom,
+			cm.origin, cm.enlarge, false,
+			vfirst, vfirst + cm.lines,
+			image_tmp, seams_tmp, cm.progress + thread
+		);
+	else
+		carve_comp_part(
+			&comp_img, &seams, &info,
+			cm.extend? +cm.nom: -cm.nom,
+			cm.origin, cm.extend, cm.enlarge ^ cm.extend,
+			vfirst, vfirst + cm.lines,
+			image_tmp, seams_tmp, cm.progress + thread
+		);
+
+	free(image_tmp);
+	free(seams_tmp);
+}
+
+LIB_PUBLIC long int sc_carve_paral_finish(
+	long int *width, long int *height, long int *pwidth, long int *pheight
 ) {
-//	Vergrößerung nicht möglich, wenn das Bild nicht erweitert wurde.
+
+	const int vfirst =  cm.lines * cm.threads;
+
+	if (cm.origin) {
+		carve_comp_part(
+			&comp_img, &seams, &info,
+			cm.enlarge? +cm.nom: -cm.nom,
+			cm.origin, cm.enlarge, false,
+			vfirst, vfirst + cm.rest,
+			comp_img.tmp, seams.tmp, cm.progress
+		);
+		carve_comp_finish(&info, cm.enlarge? +cm.nom: -cm.nom, cm.enlarge);
+	} else {
+		carve_comp_part(
+			&comp_img, &seams, &info,
+			cm.extend? +cm.nom: -cm.nom,
+			cm.origin, cm.extend, cm.enlarge ^ cm.extend,
+			vfirst, vfirst + cm.rest,
+			comp_img.tmp, seams.tmp, cm.progress
+		);
+		carve_comp_finish(&info, cm.extend? +cm.nom: -cm.nom, cm.extend);
+	}
+	cm.threads = 0;
+	free(cm.progress);
+
+	long int nom = -info.sc;
+
+	set_dimensions_nom(&info, height, width, pheight, pwidth, nom);
+
+	return nom;
+}
+
+LIB_PUBLIC long int sc_carve_paral_progress(void) {
+	if (!cm.threads)
+		return -1;
+
+	int p = 0;
+	for (int i = 0; i < cm.threads; i++)
+		p += cm.progress[i];
+
+	return p;
+}
+
+LIB_PUBLIC int sc_carve_py_rgb_paral_init(
+	long int nom, const int threads, const bool zoom, const bool rgb32
+) {
+//	enlarging impossible if image is not extended
 	if ((nom > 0) && (info.original_width == info.ext_width))
 		nom = 0;
-//	Veränderung um nur so viele Pixel wie berechnete Fugen
+//	resizing at most as wide as seams computed
 	if (abs(nom) > info.si)
 	    nom = (nom > 0)? info.si: -info.si;
 
 	const int act = -info.sc;
 
+//	orig: resizing from shrinked to enlarged or opposite
 	const bool enlarge = (nom > act),
 				extend = ((nom > 0) || (act > 0)),
 				origin = (abs(nom - act) > max2(abs(nom), abs(act)));
-	
+
 	cm.enlarge  = enlarge;
 	cm.extend   = extend;
 	cm.origin   = origin;
@@ -482,19 +511,8 @@ LIB_PUBLIC int sc_carve_py_rgb_paral_init(
 	cm.progress = malloc(cm.threads * sizeof(*cm.progress));
 	for (int i = 0; i < cm.threads; i++)
 		cm.progress[i] = 0;
-	
+
 	return cm.zoom? info.pheight: info.height;
-}
-
-LIB_PUBLIC int sc_carve_paral_progress(uint8_t *image, const int thread) {
-	if (!cm.threads)
-		return -1;
-
-	int p = 0;
-	for (int i = 0; i < cm.threads; i++)
-		p += cm.progress[i];
-
-	return p;
 }
 
 LIB_PUBLIC void sc_carve_py_rgb_paral(uint8_t *image, const int thread) {
@@ -520,7 +538,7 @@ LIB_PUBLIC void sc_carve_py_rgb_paral(uint8_t *image, const int thread) {
 			pvfirst, pvfirst + cm.plines,
 			image_tmp, seams_tmp, cm.progress + thread, cm.rgb32
 		);
-		
+
 	free(image_tmp);
 	free(seams_tmp);
 }
@@ -562,16 +580,15 @@ LIB_PUBLIC long int sc_carve_py_rgb_paral_finish(
 	}
 	cm.threads = 0;
 	free(cm.progress);
-	
-	int nom = -info.sc;
 
-	*height = info.flags.transposed? (info.original_width + nom): info.height;
-	*width  = info.flags.transposed? info.height: (info.original_width + nom);
-	*pheight = zoom_div(*height, info.zoom);
- 	*pwidth  = zoom_div(*width, info.zoom);
-	
+	long int nom = -info.sc;
+
+	set_dimensions_nom(&info, height, width, pheight, pwidth, nom);
+
 	return nom;
 }
+
+/******************************************************************************/
 
 static int parts, sm_lines, sm_vrest,
 	sm_threads, sm_cols,  sm_hrest,
@@ -616,7 +633,7 @@ LIB_PUBLIC void sc_seam_paral_diff(const int part, const int thread) {
 		 vlast = vfirst + (vend? (sm_vrest - 1): sm_lines),
 
 		hfirst = thread? (thread * sm_cols): 1,
-		 hlast = hfirst + sm_cols - ((thread == 0) || (!sm_hrest && hend)); 
+		 hlast = hfirst + sm_cols - ((thread == 0) || (!sm_hrest && hend));
 
 	vfirst += !part;
 	hlast += !hend;
@@ -667,4 +684,3 @@ LIB_PUBLIC long int sc_seam_paral_finish(void) {
 LIB_PUBLIC void sc_seam_paral_close(void) {
 	restore_seams(&seams, &info);
 }
-

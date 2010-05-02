@@ -2,52 +2,49 @@
 sc_core.c
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
 */
 
@@ -212,7 +209,7 @@ void GCC_HOT mark_ln(
 }
 
 void mark(
-	struct intn_s *diff_img, struct mark_s *mark_img, 
+	struct intn_s *diff_img, struct mark_s *mark_img,
 	const struct info_s *info
 ) {
 	if (info->flags.mark)
@@ -273,7 +270,7 @@ void trace_seam(
 	struct intn_s *diff_img, struct intn_s *intn_img, struct mark_s *mark_img,
 	seam_t *seam, struct info_s *info
 ) {
-/*  intn_img->px[i][-1] und intn_img->px[i][width] sind gültige Elemente
+/*  intn_img->px[i][-1] und intn_img->px[i][width] sind gueltige Elemente
 	und besitzen den Wert INTN_INFTY.
 	Siehe create_intn_img(), set_intn_pointers() und diff_margins().*/
 	int i = info->height - 1;
@@ -285,7 +282,7 @@ void trace_seam(
 			least = diff_img->px[i][j];
             s = j;
 		}
-		
+
 	info->width--;
 	info->si++;
 
@@ -307,7 +304,7 @@ void trace_seam_rc(
 ) {
 	const int last = info->height - 1;
 	intn_t least = INTN_INFTY;
-	
+
 	seam_t s = 0;
 
 //	Minimum in der letzten Zeile des Differenzenbilds suchen
@@ -316,7 +313,7 @@ void trace_seam_rc(
 			least = diff_img->px[last][j];
             s = j;
 		}
-		
+
 	info->width--;
 	info->si++;
 
@@ -332,11 +329,11 @@ void trace_seam_rc(
 
 //	Fuge ermitteln
 	for (int i = last - 1; i >= 0; i--) {
-		
+
 		intn_t *a  = diff_img->px[i] + s,
 			   *al = a - 1,
 			   *ah = a + 1;
-			   
+
 		seam_t d = imin3(*al, *a, *ah);
 		s += d;
 		seam[i] = s;

@@ -2,52 +2,49 @@
 sc_shift.h
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
 */
 

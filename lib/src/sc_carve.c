@@ -2,52 +2,49 @@
 sc_carve.c
 
 Diese Quelltextdatei ist Bestandteil der FUGENSCHNITZER-Programmbibliothek.
-Die FUGENSCHNITZER-Programmbibliothek untersteht der
-GNU Lesser General Public Licence (Version 3):
+
+Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
+FUGENSCHNITZER -- Seam Carving fuer jedermann.
+http://fugenschnitzer.sourceforge.net
+Copyright (C) 2008/9 David Eckardt
+
+Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen
+der GNU Lesser General Public License, wie von der Free Software
+Foundation veroeffentlicht, weitergeben und/oder modifizieren, entweder
+gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren
+Version.
+Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FUER EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, siehe
 http://www.gnu.org/licenses/lgpl-3.0.html
 http://www.gnu.org/licenses/gpl-3.0.html
 http://www.gnu.de/documents/lgpl-3.0.de.html
 http://www.gnu.de/documents/gpl-3.0.de.html
-
-Die FUGENSCHNITZER-Programmbibliothek ist eine Seam-Carving-Programmbibliothek.
-FUGENSCHNITZER -- Seam Carving fuer jedermann.
-
-Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU
-General Public License, wie von der Free Software Foundation veroeffentlicht,
-weitergeben und/oder modifizieren, entweder gemaess Version 3 der Lizenz oder
-(nach Ihrer Option) jeder spaeteren Version.
-Die Veroeffentlichung dieses Programms erfolgt in der Hoffnung, dass es Ihnen von
-Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die implizite
-Garantie der MARKTREIFE oder der VERWENDBARKEIT FueR EINEN BESTIMMTEN ZWECK.
-Details finden Sie in der GNU General Public License.
-Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem
-Programm erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>,
-<http://www.gnu.de/documents/index.de.html>.
-
+.
 
 This source code file is a part of the FUGENSCHNITZER Program Library.
-The FUGENSCHNITZER Program Library is subject to the
-GNU Lesser General Public Licence (Version 3):
-http://www.gnu.org/licenses/lgpl-3.0.html
-http://www.gnu.org/licenses/gpl-3.0.html
 
 The FUGENSCHNITZER Program Library is a Seam Carving program library.
 FUGENSCHNITZER -- Seam Carving for everyone.
-
+http://fugenschnitzer.sourceforge.net
 Copyright (C) 2008/9 David Eckardt
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNEss FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see
+http://www.gnu.org/licenses/lgpl-3.0.html
+http://www.gnu.org/licenses/gpl-3.0.html
+.
 
 */
 
@@ -61,14 +58,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void delete_intn_ln(
 	struct intn_s *intn_img, struct intn_s *diff_img, struct mark_s *mark_img,
-	const seam_t s, const struct info_s *info, const int i
+	const seam_t s, const struct info_s *info, const long int i
 ) {
 	diff_img->px[i][info->width] = INTN_INFTY;
 
 	intn_t *ipx = intn_img->px[i];
 
 	const int l = (info->width - s);
-				 
+
 	memmove(
 		ipx + s,
 		ipx + s + 1,
@@ -89,7 +86,7 @@ void delete_intn_ln(
 void save_px(
 	struct comp_s *image, comp_t *tmp,
 	const struct seams_s *seams,
-	const int first, const int n, const int i
+	const long int first, const long int n, const long int i
 ) {
 	for (int k = 0; k < n; k++) {
 		const seam_t s = seam_coord(seams, k + first, i);
@@ -114,132 +111,133 @@ void restore_px(
 
 void delete_comp_ln(
 	struct comp_s *image, struct seams_s *seams, const struct info_s *info,
-	const int i, const int last, const bool origin,
+	const long int i, const long int last, const bool origin,
 	comp_t *image_tmp, seam_t *seams_tmp
 ) {
 	const int sc = origin? 0: info->sc,
 			   n = last - sc,
 			 end = info->original_width - last;
-			 
-//	px: Bildzeile
+
+//	px: image line
 	comp_t *px = image->px[i];
-//	Zu loeschende Pixel sichern
+//	back up pixel to delete
 	save_px(image, image_tmp, seams, sc, n, i);
-//	Sortieren
+//	sort
 	sort_seams_ln_paral(seams, seams_tmp, info->original_width - sc, sc, n, i);
-//	Initialisieren
+//	initialize
 	seam_t *seam = seams_tmp;
 
 	for (int k = 0; k < n; k++) {
-//		Quelle und Ziel ausrechnen
+//		calculate source and target
 		const seam_t s = *seam + 1,
 					 t = *seam - k,
 					 l = *(seam + 1) - s;
-//		Verschieben
+//		move
 		memmove(px + t, px + s, l * sizeof(comp_t));
 		seam++;
 	}
-//	Gesicherte Pixel anhaengen
+//	append backed up pixels
 	memcpy(px + end, image_tmp, n * sizeof(comp_t));
-//	Fugen nach links verschieben
+//	left-shift seams
 	lshift_seams_ln(seams, info, sc, last, i);
 }
 
 void undelete_comp_ln(
 	struct comp_s *image, struct seams_s *seams, const struct info_s *info,
-	const int i, const int first, const bool origin,
+	const long int i, const long int first, const bool origin,
 	comp_t *image_tmp, seam_t *seams_tmp
 ) {
 	const int first_sc = origin? 0: first,
 					 n = info->sc - first_sc,
 				   end = info->original_width - info->sc;
 
-//	px: Bildzeile
+//	px: image line
 	comp_t *px = image->px[i];
-//	Angehaengte Pixel sichern
+//	back up pixel to delete
 	memcpy(image_tmp, px + end, n * sizeof(comp_t));
-//	Sortieren
+//	sort
 	sort_seams_ln_paral(seams, seams_tmp, end, first_sc, n, i);
-//	Initialisieren	
+//	initialize
 	seam_t *seam = seams_tmp + n;
 
 	for (int k = n; k > 0; k--) {
 		seam--;
-//		Quelle und Ziel ausrechnen		
+//		calculate source and target
 		const seam_t s = *seam,
 					 t = s + k,
 					 l = *(seam + 1) - s;
-//		Verschieben		
+//		move
 		memmove(px + t, px + s, l * sizeof(comp_t));
 	}
-//	Fugen nach rechts zurueckschieben
+//	right-shift seams back
 	rshift_seams_ln(seams, info, first_sc, info->sc, i);
-//	Gesicherte Pixel wieder einfuegen
+//	insert backed up pixels
 	restore_px(image, image_tmp, seams, first_sc, n, i);
 }
 
-//	Lineare Interpol. fuer (s != 0) && info->flags.interpol, sonst Wert kopieren
+//	linear interpol. for (s != 0) && info->flags.interpol else copy value
 extern comp_t interpol_px(comp_t *c, const seam_t s, const struct info_s *info);
 inline comp_t interpol_px(comp_t *c, const seam_t s, const struct info_s *info)
 	{return (s && info->flags.interpol)? comp_interpol(c + s, info): c[s];}
 
 void insert_comp_ln(
 	struct comp_s *image, struct seams_s *seams, const struct info_s *info,
-	const int i, const int last, const bool origin,
+	const long int i, const long int last, const bool origin,
 	comp_t *image_tmp, seam_t *seams_tmp
 ) {
-//	Achtung: info->sc ist negativ.
+//	caution: info->sc is negative.
 	const int sc = origin? 0: info->sc,
 			   n = last + sc,
 			 end = info->original_width + last - 1;
-//	px: Bildzeile
+//	px: image line
 	comp_t *px = image->px[i];
-//	Sortieren
+//	sort
 	sort_seams_ln_paral(seams, seams_tmp, info->original_width - sc, -sc, n, i);
-// Initialisieren
+// initialize
 	seam_t *seam = seams_tmp + n;
 
 	for (int k = n; k > 0; k--) {
-//		Quelle und Ziel ausrechnen		
+//		calculate source and target
 		seam--;
 		const seam_t s = *seam,
 					 t = s + k,
-					 l = *(seam + 1) - s;					 
+					 l = *(seam + 1) - s;
 
-//		Interpolieren
+//		interpolate
 		const comp_t c = interpol_px(px, s, info);
-//		Verschieben
+//		move
 		memmove(px + t, px + s, l * sizeof(comp_t));
-//		Einfuegen
+//		insert
 		px[t - 1] = c;
 	}
-//	Fugen nach rechts verschieben
+//	right-shift seams
 	rshift_seams_ln(seams, info, -sc, last, i);
 }
 
-void uninsert_comp_ln( 
+void uninsert_comp_ln(
 	struct comp_s *image, struct seams_s *seams, const struct info_s *info,
-	const int i, const int first, const bool origin,
+	const long int i, const long int first, const bool origin,
 	comp_t *image_tmp, seam_t *seams_tmp
 ) {
-//	Achtung: info->sc ist negativ.
+//	caution: info->sc is negative.
 	const int first_sc = origin? 0: first,
-					 n = -info->sc - first_sc;				 
-//	px: Bildzeile
+					 n = -info->sc - first_sc;
+//	px: image line
 	comp_t *px = image->px[i];
-//	Sortieren
+//	sort
 	sort_seams_ln_paral(seams, seams_tmp, info->original_width - info->sc, first_sc, n, i);
-//	Initialisieren
+//	initialize
 	seam_t *seam = seams_tmp;
 	for (int k = 0; k < n; k++) {
-//		Quelle und Ziel ausrechnen
+//		calculate source and target
 		const seam_t s = *seam + 1,
 					 t = *seam - k,
 					 l = *(seam + 1) - s;
-//		Verschieben
+//		move
 		memmove(px + t, px + s, l * sizeof(comp_t));
 		seam++;
 	}
+//	left-shift seams back
 	lshift_seams_ln(seams, info, first_sc, -info->sc, i);
 }
 
@@ -261,7 +259,7 @@ void undelete_mark_ln(
 //	Fugen sc -> si
 	if (ext)
 		clear_shift_ln(seams, info, i);
-	lshift_seams_ln(seams, info, last, info->si, i);	
+	lshift_seams_ln(seams, info, last, info->si, i);
 
 
 //	Markierung si -> ((restore || ext)? 0: sc)
@@ -273,18 +271,18 @@ void undelete_mark_ln(
 	seam_t *seam = seams->tmp + n;
 	for (int k = n; k > 0; k--) {
 		seam--;
-//		Quelle und Ziel ausrechnen		
+//		Quelle und Ziel ausrechnen
 		const seam_t s = *seam,
-					 t = s + k,		
+					 t = s + k,
 					 l = *(seam + 1) - s;
-//		Verschieben		
+//		Verschieben
 		memmove(px + t, px + s, l * sizeof(mark_t));
 		px[t - 1] = 0;
 	}
 
 //	Fugen si -> sc
 	if (ext) {
-		clear_shift_ln(seams, info, i);		
+		clear_shift_ln(seams, info, i);
 		irshift_seams_ln(seams, info, 0, -info->sc, i);
 	} else
 		rshift_seams_ln(seams, info, last, info->si, i);
@@ -298,9 +296,9 @@ void insert_mark_ln(
 //	Achtung: info->sc ist negativ!
 	const int n = -info->sc;
 //	px: Bildzeile
-	mark_t *px = image->px[i];		
+	mark_t *px = image->px[i];
 //	Sortieren
-	sort_seams_ln_noshift(seams, 0, n, i);	
+	sort_seams_ln_noshift(seams, 0, n, i);
 //	Rechter Rand
     seams->tmp[n] = info->original_width;
 
@@ -308,7 +306,7 @@ void insert_mark_ln(
 	seam_t *seam = seams->tmp + n;
 
 	for (int k = n; k > 0; k--) {
-//		Quelle und Ziel ausrechnen		
+//		Quelle und Ziel ausrechnen
 		seam--;
 		const seam_t s = *seam,
 					 t = s + k,
@@ -343,26 +341,26 @@ void fix_shift_mark(
 	const bool restore
 ) {
 	if (!info->flags.mark || !info->sc || !restore) return;
-	
+
     for (int i = 0; i < info->height; i++) {
 		undelete_mark_ln(image, seams, info, i, restore);
 		insert_mark_ln(image, seams, info, i, restore);
-	}	
-}	
+	}
+}
 */
 
 /******************************************************************************/
 
 typedef void (*prevw_py_rgb_func_t)(
 	uint8_t *img_out, const struct comp_s *image, const struct info_s *info,
-	const int i, const int ch, const int d
+	const long int i, const int ch, const int d
 );
 
-// Die Vorschaufunktionen befinden sich in sc_color.
+// The preview functions are in sc_color.
 
 typedef void (*carve_func_t)(
 	struct comp_s *image, struct seams_s *seams, const struct info_s *info,
-	const int i, const int last, const bool origin,
+	const long int i, const long int last, const bool origin,
 	comp_t *image_tmp, seam_t *seams_tmp
 );
 
@@ -372,45 +370,47 @@ const carve_func_t carve_func[2][2] = {
 };
 
 void carve_comp_part(
-	struct comp_s *image, struct seams_s *seams,
-	const struct info_s *info, const int last, const bool origin,
-	const bool insert, const bool reverse,
-	const int vfirst, const int vlast,
-	comp_t *image_tmp, seam_t *seams_tmp
+	struct comp_s *image, struct seams_s *seams, struct info_s *info,
+	const long int last, const bool origin, const bool insert, const bool reverse,
+	const long int vfirst, const int long vlast,
+	comp_t *image_tmp, seam_t *seams_tmp, int *progress
 ) {
-//	printf("%s: %d %d\n", __func__, vfirst, vlast);
+	carve_func_t        carve_ln = carve_func[insert][reverse],
+					  restore_ln = carve_func[!insert][true];
 
-	carve_func_t carve_ln = carve_func[insert][reverse];
-	for (int i = vfirst; i < vlast; i++)
-		carve_ln(image, seams, info, i, last, origin, image_tmp, seams_tmp);
+	for (int i = vfirst; i < vlast; i++) {
+			if (origin)
+				restore_ln(image, seams, info, i, 0, origin, image_tmp, seams_tmp);
+			carve_ln(image, seams, info, i, last, origin, image_tmp, seams_tmp);
+		(*progress)++;
+	}
 }
 
-int carve_comp_finish(struct info_s *info, const int last, const bool insert)
+long int carve_comp_finish(struct info_s *info, const long int last, const bool insert)
 	{return -(info->sc = insert? -last: last);}
 
 void carve_comp(
-	struct comp_s *image, struct seams_s *seams,
-	struct info_s *info, const int last,
-	const bool insert, const bool reverse
+	struct comp_s *image, struct seams_s *seams, struct info_s *info,
+	const long int last, const bool insert, const bool reverse, int *progress
 ) {
 	carve_comp_part(
 		image, seams, info, last, false, insert, reverse, 0, info->height,
-		image->tmp, seams->tmp
+		image->tmp, seams->tmp, progress
 	);
 	carve_comp_finish(info, last, insert);
 }
 
 void carve_comp_py_rgb_part(
 	uint8_t *img_out, struct comp_s *image, struct seams_s *seams,
-	struct info_s *info, const bool zoom, const int last, const bool origin,
-	const bool insert, const bool reverse, const int vfirst, const int vlast,
+	struct info_s *info, const bool zoom, const long int last, const bool origin,
+	const bool insert, const bool reverse, const long int vfirst, const long int vlast,
 	comp_t *image_tmp, seam_t *seams_tmp, int *progress, const bool rgb32
 ) {
 	const int
 		ch = 3 + rgb32,
 		z = zoom? info->zoom: 1,
 		d = z * z;
-	
+
 	carve_func_t        carve_ln = carve_func[insert][reverse],
 					  restore_ln = carve_func[!insert][true];
 	prevw_py_rgb_func_t prevw_ln = zoom?
@@ -423,25 +423,25 @@ void carve_comp_py_rgb_part(
 				restore_ln(image, seams, info, i, 0, origin, image_tmp, seams_tmp);
 			carve_ln(image, seams, info, i, last, origin, image_tmp, seams_tmp);
 		}
-		
+
 		prevw_ln(img_out, image, info, I, ch, d);
 		(*progress)++;
 	}
 }
 
-int carve_comp_py_rgb_finish(
+long int carve_comp_py_rgb_finish(
 	struct comp_s *image, struct seams_s *seams, struct info_s *info,
-	const bool zoom, const int last, const bool origin,
+	const bool zoom, const long int last, const bool origin,
 	const bool insert, const bool reverse
 ) {
 	const int z = zoom? info->zoom: 1;
 	carve_func_t        carve_ln = carve_func[insert][reverse],
 					  restore_ln = carve_func[!insert][true];
 
-	if (zoom && info->zoom) 
+	if (zoom && info->zoom)
 		for (int i = info->pheight * z; i < info->height; i++) {
 			if (origin)
-				restore_ln(image, seams, info, i, 0, origin, image->tmp, seams->tmp);	
+				restore_ln(image, seams, info, i, 0, origin, image->tmp, seams->tmp);
 			carve_ln(image, seams, info, i, last, origin, image->tmp, seams->tmp);
 		}
 
@@ -451,7 +451,7 @@ int carve_comp_py_rgb_finish(
 void carve_comp_py_rgb(
 	uint8_t *img_out, struct comp_s *image, struct seams_s *seams,
 	struct info_s *info, const bool zoom,
-	const int last, const bool origin, const bool insert, const bool reverse,
+	const long int last, const bool origin, const bool insert, const bool reverse,
 	int *progress, const bool rgb32
 ) {
 	carve_comp_py_rgb_part(

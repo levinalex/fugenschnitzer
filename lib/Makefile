@@ -75,32 +75,32 @@ CC             = gcc
 
 # *** OSX
 
-LIBSUFFIX      = .dylib
-LIBPREFIX      = 
-ores           = 
-
-RM             = rm
-WINDRES        = 
-
-CFLAGS         = -c -std=c99 -DBUILDING_LIB -pedantic -Wextra -Os -arch i386 -arch ppc
-LDFLAGS        = -dynamiclib -Wl,-x -arch i386 -arch ppc
-TESTFLAGS      = -std=c99 -DBUILDING_LIB -dynamiclib
-
-# *** Linux
-
-# LIBSUFFIX      = .so
-# LIBPREFIX      = lib
+# LIBSUFFIX      = .dylib
+# LIBPREFIX      = 
 # ores           = 
 
 # RM             = rm
 # WINDRES        = 
 
-# CFLAGS         = -c -std=c99 -DBUILDING_LIB -pedantic -Wextra -Os
-# LDFLAGS        = -shared
+# CFLAGS         = -c -std=c99 -DBUILDING_LIB -pedantic -Wextra -Os -arch i386 -arch ppc
+# LDFLAGS        = -dynamiclib -Wl,-x -arch i386 -arch ppc
+# TESTFLAGS      = -std=c99 -DBUILDING_LIB -dynamiclib
+
+# *** Linux
+
+LIBSUFFIX      = .so
+LIBPREFIX      = lib
+ores           = 
+
+RM             = rm
+WINDRES        = 
+
+CFLAGS         = -c -std=c99 -DBUILDING_LIB -pedantic -Wextra -Os -fPIC
+LDFLAGS        = -shared
 
 # ***
 
-VPATH          = lib
+VPATH          = src
 
 LIBBASENAME    = seamcarv
 
