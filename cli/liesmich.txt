@@ -1,0 +1,99 @@
+FUGENSCHNITZER 0.8 beta 2, Kommandozeilenversion
+FUGENSCHNITZER – Seam Carving für jedermann.
+Copyright © 2008/9 David Eckardt
+http://fugenschnitzer.sourceforge.net/ 
+
+Fugenschnitzer ist ein Programm zur Größenänderung von Bildern mit dem 
+Seam-Carving-Verfahren. Die vorliegende Kommandozeilenversion 
+unterstützt das Bildformat PNG (Portable Network Graphics). 
+
+Das Seam-Carving-Verfahren wurde vorgestellt von A. Shamir und S. Avidan:
+http://www.seamcarving.com
+
+*** Verwendung
+
+> fusch <Quelle> <Ziel> <Wert>
+
+Quelle, Ziel: PNG-Bilddatei
+
+Wert:
+  h#    - Ändert die horizontale Bildgröße auf # Pixel.
+  h+#   - Vergrößert das Bild horizontal um # Pixel.
+  h-#   - Verkleinert das Bild horizontal um # Pixel.
+
+  v#
+  v+#
+  v-#   - Wie zuvor, allerdings vertikal.
+
+  @+#:# - Vergrößert das Bild in einer Dimension auf das
+          Seitenverhältnis #:#.
+  @-#:# - Verkleinert das Bild in einer Dimension auf das
+          Seitenverhältnis #:# (Breite:Höhe). 
+
+  %+#
+  %-#   - Vergrößert bzw. verkleinert das Bild in einer Dimension auf das
+          Seitenverhältnis #% (Breite/Höhe).
+          
+Beispiele: 
+
+> fusch bild.png bild2.png h500
+Ändert die horizontale Größe des Bildes in bild.png auf 500 Pixel und 
+speichert das geänderte Bild in bild2.png. 
+
+> fusch bild.png bild2.png v+30
+Vergrößert das Bild in bild.png vertikal um 30 Pixel und speichert das 
+geänderte Bild in bild2.png. 
+
+> fusch bild.png bild2.png @+16:9
+Vergrößert das Bild in bild.png in einer Richtung, so daß das 
+Bildseitenverhältnis auf 16:9 (Breite:Höhe) geändert wird. Das geänderte 
+Bild wird originellerweise in bild2.png gespeichert. 
+
+> fusch bild.png bild3.png %-133
+Verkleinert das Bild in bild.png in einer Richtung, so daß das 
+Bildseitenverhältnis auf 133% (Breite/Höhe) geändert wird. (133% 
+entspricht dem Seitenverhältnis 4:3.) Das geänderte Bild wird in 
+bild2.png gespeichert. 
+
+
+*** Eingebundene Programmbibliotheken 
+
+- libseamcarv (Windows: seamcarv.dll)
+Dies ist die Fugenschnitzer-Programmbibliothek, die vom selben Autor 
+stammt wie das Anwendungsprogramm. Die Implementierung des 
+Seam-Carving-Verfahrens befindet sich in dieser Bibliothek. 
+
+- libpng12
+Bibliothek für das PNG-Bilddateiformat. 
+http://libpng.org/
+http://libpng.org/pub/png/libpng.html 
+
+- zlib1 (nur Windows)
+Wird von der libpng12 benötigt.
+http://www.zlib.net/
+
+- pthreadGC2 (nur Windows)
+Multi-Threading-Bibliothek.
+http://sourceware.org/pthreads-win32/
+
+
+*** Lizenz, Vervielfältigung und Haftung 
+
+Die FUGENSCHNITZER-Programmbibliothek unterliegt der GNU Lesser General 
+Public License 3. Das FUGENSCHNITZER-Anwendungsprogramm, das auf der 
+FUGENSCHNITZER- Programmbibliothek basiert, unterliegt der GNU General 
+Public License 3. Die Lizenztexte befinden sich in der Datei lizenz.txt. 
+Dieses Programm ist freie Software. Sie können es unter den Bedingungen 
+der GNU General Public License, wie von der Free Software Foundation 
+veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß 
+Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version. 
+
+Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, daß es 
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne 
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN 
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License. 
+
+Sie sollten ein Exemplar der GNU General Public License zusammen mit 
+diesem Programm erhalten haben. Falls nicht, siehe 
+http://www.gnu.org/licenses/. 
+
